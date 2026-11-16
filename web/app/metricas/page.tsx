@@ -47,7 +47,7 @@ export default function MetricasPage() {
           href="/"
           className="rounded bg-[#2a475e] px-3.5 py-2 text-xs font-bold text-white hover:bg-[#3b6180]"
         >
-          ← Volver a la tienda
+          ← V← Volver a la tienda
         </Link>
       </div>
 
@@ -131,3 +131,4 @@ export default function MetricasPage() {
     </div>
   );
 }
+
