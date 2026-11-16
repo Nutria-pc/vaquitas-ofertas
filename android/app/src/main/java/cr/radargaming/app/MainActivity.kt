@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 10.0.2.2 apunta al localhost de tu PC desde el emulador Android
-        val baseUrl = "http://10.0.2.2:8000"
+        val baseUrl = "https://vaquitas-ofertas.onrender.com"
 
         setContent {
             MaterialTheme(
@@ -425,3 +425,4 @@ suspend fun fetchGameDetail(baseUrl: String, gameId: Int): GameFullDetail? = wit
         null
     }
 }
+
