@@ -1,0 +1,29 @@
+'use client';
+import {useEffect,useState} from 'react';
+const API=process.env.NEXT_PUBLIC_API_URL||'http://127.0.0.1:8000';
+type Game={id:number;title:string;platforms:string;game_type:string;cover_url?:string|null;msrp_crc?:number|null;best_price_crc?:number|null;best_regular_price_crc?:number|null;rating?:number|null;best_store?:string|null;best_url?:string|null;price_count:number;historical_low:boolean;discount_pct?:number|null};
+const money=(v?:number|null)=>v==null?'Sin precio verificado':`₡${Math.round(v).toLocaleString('es-CR')}`;
+export default function Home(){
+ const [q,setQ]=useState(''),[platform,setPlatform]=useState(''),[sort,setSort]=useState('name'),[store,setStore]=useState(''),[format,setFormat]=useState(''),[gameType,setGameType]=useState('');
+ const [games,setGames]=useState<Game[]>([]),[total,setTotal]=useState(0),[page,setPage]=useState(1),[error,setError]=useState(''),[loading,setLoading]=useState(false);
+ async function load(p=1){setLoading(true);try{setError('');const params=new URLSearchParams({page:String(p),page_size:'24',sort});if(q)params.set('q',q);if(platform)params.set('platform',platform);if(store)params.set('store',store);if(format)params.set('format',format);if(gameType)params.set('game_type',gameType);
+ const res=await fetch(`${API}/games?${params}`,{cache:'no-store'});if(!res.ok)throw Error('API no disponible');const data=await res.json();setGames(data.items);setTotal(data.total);setPage(p);
+ }catch{setGames([]);setTotal(0);setError('No se pudo conectar con la API. Iniciá el backend y verificá NEXT_PUBLIC_API_URL.');}finally{setLoading(false)}}
+ useEffect(()=>{load(1)},[platform,sort,store,format,gameType]);
+ return <><nav><a className="logo" href="/">RADAR<span>GAMING</span></a><div className="navlinks"><a href="/">Inicio</a><a href="#catalogo">Catálogo</a><a href="/metricas">Métricas</a><a href="#como">Cómo funciona</a></div><span className="country">COSTA RICA · CRC</span></nav>
+ <main className="container"><section className="hero"><div className="eyebrow">RADAR GAMING · COSTA RICA</div><h1>Encontrá el juego.<br/><em>Pagá menos.</em></h1><p>Compará precios observados, consultá su historial y abrí la tienda original para completar tu compra.</p>
+ <form onSubmit={e=>{e.preventDefault();load(1)}}><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Buscá un videojuego..."/><button disabled={loading}>Buscar</button></form>
+ <div className="pills"><span>Precios en colones</span><span>Historial de precios</span><span>Enlaces a tiendas originales</span></div></section>
+ <section id="catalogo"><div className="heading"><div><div className="eyebrow">EXPLORAR</div><h2>Catálogo de videojuegos</h2></div><span className="muted">{total.toLocaleString('es-CR')} resultados</span></div>
+ <div className="filters"><select value={platform} onChange={e=>setPlatform(e.target.value)}><option value="">Todas las plataformas</option><option>PC</option><option>PlayStation</option><option>Xbox</option><option>Nintendo Switch</option></select>
+ <select value={store} onChange={e=>setStore(e.target.value)}><option value="">Todas las tiendas</option><option>Steam</option><option>GOG</option><option>Epic Games Store</option></select>
+ <select value={format} onChange={e=>setFormat(e.target.value)}><option value="">Todos los formatos</option><option>Digital</option><option>Físico</option></select><select value={gameType} onChange={e=>setGameType(e.target.value)}><option value="">Todos los tipos</option><option value="game">Juego</option><option value="game_dlc">Juego + DLC</option><option value="dlc">DLC</option><option value="other">Otro</option></select>
+ <select value={sort} onChange={e=>setSort(e.target.value)}><option value="name">Nombre</option><option value="price">Mejor precio</option><option value="discount">Descuento</option><option value="rating">Calificación</option></select></div>
+ {error&&<div className="empty">{error}</div>}{!error&&games.length===0&&<div className="empty">{loading?'Cargando catálogo…':'Todavía no hay juegos cargados. Importá el catálogo y ejecutá las fuentes autorizadas. No se muestran ofertas inventadas.'}</div>}
+ <div className="grid">{games.map(g=><article className="game" key={g.id}>{g.cover_url?<img src={g.cover_url} alt={`Portada de ${g.title}`} loading="lazy"/>:<div className="cover">RG</div>}<div className="platform">{g.platforms}</div><h3>{g.title}</h3>
+ <strong>{money(g.best_price_crc??g.msrp_crc)}</strong>{g.best_regular_price_crc!=null&&g.best_price_crc!=null&&g.best_regular_price_crc>g.best_price_crc&&<del>{money(g.best_regular_price_crc)}</del>}<small>{g.best_price_crc!=null?`${g.best_store??'Tienda'} · precio verificado`:'Sin precio actual verificado'}</small><small>{g.rating!=null?`Calificación: ${g.rating}/100`:'Sin calificación verificada'}</small>{g.discount_pct!=null&&g.discount_pct>0&&<span className="low">-{g.discount_pct}% DESCUENTO</span>}{g.historical_low&&<span className="low">MÍNIMO HISTÓRICO</span>}
+ <a className="details" href={`/games/${g.id}`}>Ver detalle e historial ↗</a>{g.best_url&&<a className="buy" href={g.best_url} target="_blank" rel="noreferrer">Abrir tienda original</a>}</article>)}</div>
+ <div className="pagination"><button disabled={page<=1||loading} onClick={()=>load(page-1)}>Anterior</button><span>Página {page}</span><button disabled={page*24>=total||loading} onClick={()=>load(page+1)}>Siguiente</button></div></section>
+ <section id="como" className="how"><div className="eyebrow">TRANSPARENCIA</div><h2>Precios claros. Fuentes claras.</h2><p>Los precios muestran tienda, enlace, moneda original y fecha de observación. Los datos vencidos o no verificados no se presentan como ofertas actuales. El precio final puede variar por región, impuestos o tipo de cambio.</p></section>
+ <footer>RADAR GAMING · Costa Rica · Proyecto IC-3101 · Verificá región, impuestos y precio final en la tienda.</footer></main></>;
+}
