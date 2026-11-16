@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://TU-URL.onrender.com";
 
 interface GameItem {
   id: number;
@@ -511,3 +511,4 @@ export default function HomePage() {
     </div>
   );
 }
+

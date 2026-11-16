@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://TU-URL.onrender.com";
 
 interface PriceRow {
   store: string;
@@ -636,4 +636,5 @@ export default function GameDetailPage() {
     </div>
   );
 }
+
 
