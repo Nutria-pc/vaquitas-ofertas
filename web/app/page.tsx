@@ -1,9 +1,9 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://TU-URL.onrender.com";
+const API_URL = "https://vaquitas-ofertas.onrender.com";
 
 interface GameItem {
   id: number;
